@@ -1,0 +1,75 @@
+﻿@page "/"
+@inject IDialogService DialogService
+
+<MudItem Class="ma-3 w-25">
+
+    <MudItem Class="d-flex align-items-center">
+        <MudTextField @bind-Value="TextValue"
+                      T="string"
+                      Label="Testing Input"
+                      Variant="Variant.Outlined"
+                      Margin="Margin.Dense">
+        </MudTextField>
+
+        <MudText Typo="Typo.subtitle1"
+                 Class="ms-2"
+                 Color="Color.Error">
+            @ErrorMessage
+        </MudText>
+    </MudItem>
+
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Secondary"
+               OnClick="GetUsername">
+        Get Username
+    </MudButton>
+
+</MudItem>
+
+<MudItem Class="ma-3 w-25">
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@string.IsNullOrEmpty(TextValue)"
+               OnClick="OpenDialog">
+        Show Username Dialog
+    </MudButton>
+</MudItem>
+
+
+
+@code {
+    private string? TextValue { get; set; }
+    private string? Username { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    private void GetUsername()
+    {
+        if (!string.IsNullOrEmpty(TextValue))
+        {
+            Username = TextValue;
+            ErrorMessage = "";
+        }
+        else
+        {
+            ErrorMessage = "You must provide a Username!";
+        }
+    }
+
+    private async Task OpenDialog()
+    {
+        ErrorMessage = "";
+
+        var parameters = new DialogParameters();
+        parameters.Add("Username", Username);
+
+        var options = new DialogOptions()
+        { 
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<TestingName_Dialog>("Dialog Title", parameters, options);
+    }
+}
